@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <script src="javascripts/webrtc.js"></script>
+        <style type="text/css">
+        .userVideo {
+            height: 200px;
+            width: 200px;
+            float: left;
+            position: absolute; 
+            bottom: 0;
+            right: 0;
+        }
+
+        .btnClass {
+            float: left;
+            position: absolute; 
+            bottom: 0;
+            center: 0;
+        }
+
+        .peerVideo {
+            height: 100%;
+            width: 100%;
+        }
+        .video-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .Center{
+            position: relative;
+            top: 0; left: 0; bottom: 100; right: 0;
+        }
+        .btn-bot{
+            position: absolute;
+            bottom: 50;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class='video-container'>
+           <video class='userVideo' id="localVideo" autoplay muted></video>
+           <video class='peerVideo' id='remoteVideo' autoplay></video>
+           <div class='Center' align='center'>
+                <input type="button" class="btn-bot" id="start" onclick="start(true)" value="Start Video"></input>
+            </div>
+        </div>
+        <script type="text/javascript">
+            pageReady();
+        </script>
+    </body>
+</html>
