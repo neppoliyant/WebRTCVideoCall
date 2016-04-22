@@ -4,7 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var http = require('http');
+var http = require('https');
+var fs = require('fs');
+const options = {
+  key: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.key'),
+  cert: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.crt')
+};
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -71,7 +76,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
