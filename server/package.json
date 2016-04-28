@@ -1,0 +1,11 @@
+{
+  "name": "WebRTCServer",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "3.5.0",
+    "https": ">=0.0.0",
+    "fs": ">=0.0.0",
+    "ws": ">=0.0.0"
+  }
+}
