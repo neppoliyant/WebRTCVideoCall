@@ -3,8 +3,9 @@ var https = require ('https');
 var express = require('express');
 var fs = require('fs');
 const options = {
-  key: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.key'),
-  cert: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.crt')
+  key: fs.readFileSync('www.thegeekstuff.com.key'),
+  cert: fs.readFileSync('www.thegeekstuff.com.crt'),
+  passphrase: 'star'
 };
 var Application = express();
 var port = 3434;

@@ -7,8 +7,9 @@ var bodyParser = require('body-parser');
 var http = require('https');
 var fs = require('fs');
 const options = {
-  key: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.key'),
-  cert: fs.readFileSync('/home/ubuntu/www.thegeekstuff.com.crt')
+  key: fs.readFileSync('www.thegeekstuff.com.key'),
+  cert: fs.readFileSync('www.thegeekstuff.com.crt'),
+  passphrase: 'star'
 };
 
 var routes = require('./routes/index');
