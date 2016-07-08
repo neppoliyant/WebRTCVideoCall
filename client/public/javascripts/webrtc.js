@@ -9,10 +9,7 @@ window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || 
 window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
 
 function pageReady() {
-    localVideo = document.getElementById('localVideo');
-    remoteVideo = document.getElementById('remoteVideo');
-
-    serverConnection = new WebSocket('wss://96.119.2.27:3434');
+    serverConnection = new WebSocket('wss://localhost:3434');
     serverConnection.onmessage = gotMessageFromServer;
 
     var constraints = {
@@ -29,25 +26,20 @@ function pageReady() {
 
 function getUserMediaSuccess(stream) {
     localStream = stream;
+    var localVideo = document.getElementById('localVideo');
     localVideo.src = window.URL.createObjectURL(stream);
 }
 
 function start(isCaller) {
-    var constraints = {
-        video: true,
-        audio: true,
-    };
-    navigator.getUserMedia(constraints, getUserMediaSuccess, errorHandler);
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     peerConnection.onicecandidate = gotIceCandidate;
     peerConnection.onaddstream = gotRemoteStream;
     peerConnection.addStream(localStream);
 
-    if(isCaller) {
+    if (isCaller) {
         peerConnection.createOffer(gotDescription, errorHandler);
-    } else {
-        peerConnection.createAnswer(gotDescription, errorHandler);
     }
+    
 }
 
 function gotMessageFromServer(message) {
@@ -78,6 +70,7 @@ function gotDescription(description) {
 }
 
 function gotRemoteStream(event) {
+    var remoteVideo = document.getElementById('remoteVideo');
     console.log('got remote stream');
     remoteVideo.src = window.URL.createObjectURL(event.stream);
 }
