@@ -13,7 +13,6 @@ const options = {
 };
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -32,7 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 console.log(__dirname);
 
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

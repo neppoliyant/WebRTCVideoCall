@@ -8,8 +8,9 @@ window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnecti
 window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
 window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
 
-function pageReady() {
-    serverConnection = new WebSocket('wss://localhost:3434');
+function pageOnReady() {
+    serverConnection = new WebSocket('wss://10.36.110.184:3434');
+    //OnMessage event trigger gotMessageFromServer() will be executed.
     serverConnection.onmessage = gotMessageFromServer;
 
     var constraints = {
@@ -18,57 +19,75 @@ function pageReady() {
     };
 
     if(navigator.getUserMedia) {
-        navigator.getUserMedia(constraints, getUserMediaSuccess, errorHandler);
+    	navigator.getUserMedia(constraints, getUserMediaOnSuccess, errorHandler);
     } else {
         alert('Your browser does not support getUserMedia API');
     }
 }
 
-function getUserMediaSuccess(stream) {
+function getUserMediaOnSuccess(stream) {
     localStream = stream;
     var localVideo = document.getElementById('localVideo');
-    localVideo.src = window.URL.createObjectURL(stream);
+    localVideo.src = window.URL.createObjectURL(localStream);
 }
 
 function start(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
+    
+  //OnIceCandidate, OnAddStream, respect event trigger the respective callback methods will be executed. All these triggers will be invoked by WebRTC stack.
+    
     peerConnection.onicecandidate = gotIceCandidate;
     peerConnection.onaddstream = gotRemoteStream;
     peerConnection.addStream(localStream);
 
     if (isCaller) {
-        peerConnection.createOffer(gotDescription, errorHandler);
-    }
-    
+        peerConnection.createOffer(gotOfferSDP, errorHandler);
+    }    
 }
 
-function gotMessageFromServer(message) {
-    if(!peerConnection) start(false);
+//As in when WebRTC stack returns SDP this function will be executed.
+function gotOfferSDP(offer) {
+    console.log('got offer');
+    peerConnection.setLocalDescription(offer, function () {
+        serverConnection.send(JSON.stringify({'sdp': offer}));
+    }, function() {console.log('set offer description error')});
+}
 
+//As in when WebRTC stack returns SDP this function will be executed.
+function gotAnswerSDP(answer) {
+    console.log('got answer');
+    peerConnection.setLocalDescription(answer, function () {
+        serverConnection.send(JSON.stringify({'sdp': answer}));
+    }, function() {console.log('set answer description error')});
+}
+
+//As in when WebSocket triggers OnMessage event this method will be executed.
+function gotMessageFromServer(message) {
+	//if not a peerConnection object then start(false);
+    if(!peerConnection) {
+    	start(false);
+    }    	
+  
     var signal = JSON.parse(message.data);
     if(signal.sdp) {
         peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function() {
             console.log("success creation of session description");
-            peerConnection.createAnswer(gotDescription, errorHandler);
+            peerConnection.createAnswer(gotAnswerSDP, errorHandler);
         }, errorHandler);
     } else if(signal.ice) {
         peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice));
     }
 }
 
+//As in when WebRTC stack returns IceCandidates this function will be executed.
 function gotIceCandidate(event) {
     if(event.candidate != null) {
         serverConnection.send(JSON.stringify({'ice': event.candidate}));
     }
 }
 
-function gotDescription(description) {
-    console.log('got description');
-    peerConnection.setLocalDescription(description, function () {
-        serverConnection.send(JSON.stringify({'sdp': description}));
-    }, function() {console.log('set description error')});
-}
 
+//As in when WebRTC stack returns remoteStream this function will be executed.
 function gotRemoteStream(event) {
     var remoteVideo = document.getElementById('remoteVideo');
     console.log('got remote stream');
