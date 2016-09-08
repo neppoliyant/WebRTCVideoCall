@@ -21,7 +21,7 @@ function pageOnReady() {
     if(navigator.getUserMedia) {
     	navigator.getUserMedia(constraints, getUserMediaOnSuccess, errorHandler);
     } else {
-        alert('Your browser does not support getUserMedia API');
+        alert('Your browser does not support WebRTC');
     }
 }
 
